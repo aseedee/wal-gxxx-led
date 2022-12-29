@@ -8,7 +8,7 @@ install:
 	install -Dm755 $(PROJECT) $(PREFIX)/bin/$(PROJECT)
 	@echo
 	@echo 'installed to $(PREFIX)/bin, make sure it is in your $$PATH'
-	@echo 'or uninstall and run again with desired desired prefix:'
+	@echo 'or uninstall and run again with desired prefix:'
 	@echo '$$ make uninstall '
 	@echo '$$ PREFIX=<your prefix> make install'
 
