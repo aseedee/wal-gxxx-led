@@ -1,0 +1,57 @@
+#!/bin/sh
+
+default_offset=1
+default_led_command=g810-led
+
+usage() {
+    echo "usage:
+    $(basename $0) [-h | --help] [-o | --offset <offset>]
+
+options:
+    -h, --help                      print usage and exit
+    -o, --offset <offset>           specify colors offset (default is $default_offset)
+    -p, --led-command <command>    command used to change led colors
+                                        one of provided by https://github.com/MatMoul/g810-led
+                                        (default is $default_led_command)
+"
+    exit 0
+}
+
+while [ -n "$1" ]; do
+    case "$1" in
+        -h | --help)
+            usage
+            ;;
+        -o | --offset)
+            shift
+            offset="$1"
+            ;;
+        -p | --led-command)
+            shift
+            led_command="$1"
+            ;;
+    esac
+    shift
+done
+
+led_command=${led_command:-"$default_led_command"}
+echo $led_command
+# reset coloring (for (kind of) animation)
+"$led_command" -a 00
+
+offset=${offset:-$default_offset}
+region=0
+
+cat ~/.cache/wal/colors | while read color; do
+    # skip $offset colors
+    [ $offset -gt 0 ] && {
+        offset=$((offset - 1))
+        continue
+    }
+    region=$((region + 1))
+    echo $region $color
+    "$led_command" -r $region ${color#'#'}
+    sleep 0.1 # very fancy loading style delay
+    [ $region -gt 5 ] &&
+        break
+done
